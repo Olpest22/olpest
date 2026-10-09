@@ -1,0 +1,33 @@
+Для того, кто ведёт Omad. Это предложение, финальную правку делаете вы в проекте Omad.
+
+Что ждёт olpest от Caddy Omad
+-----------------------------
+- Контейнер:      olpest-web
+- Порт внутри:    80 (HTTP, наружу не опубликован)
+- Сеть Docker:    edge (внешняя, создаётся командой docker network create edge;
+                  имя можно поменять в /opt/olpest/.env: EDGE_NETWORK=...)
+- Заголовки CSP, кеш и сжатие olpest отдаёт сам. От Caddy Omad нужны только домен, HTTPS и проксирование.
+
+1) Блок в Caddyfile Omad (вместо olpest.ru подставить реальный домен):
+
+olpest.ru {
+	reverse_proxy olpest-web:80
+}
+
+www.olpest.ru {
+	redir https://olpest.ru{uri} permanent
+}
+
+2) Подключить контейнер Caddy от Omad к сети edge (docker-compose.yml Omad), сохранив сети, которые у него уже есть:
+
+services:
+  caddy:            # имя сервиса Caddy в Omad
+    networks:
+      - default     # и/или прочие текущие сети Caddy
+      - edge
+
+networks:
+  edge:
+    external: true
+
+HSTS для нового домена, если нужен, ставится на стороне Caddy Omad.

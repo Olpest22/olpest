@@ -1,0 +1,46 @@
+# /opt/olpest/docker-compose.yml
+# Отдельный проект со своим именем: команды docker compose здесь
+# никогда не затрагивают контейнеры Omad.
+name: olpest
+
+services:
+  web:
+    build: .
+    image: olpest-web:latest
+    container_name: olpest-web
+    restart: unless-stopped
+    # Портов нет намеренно: 80/443 сервера принадлежат Caddy от Omad.
+    networks:
+      edge:
+        aliases:
+          - olpest-web
+    # Статике хватает крошек — ограничиваем, чтобы никогда не отнять ресурсы у Omad.
+    mem_limit: 96m
+    cpus: 0.5
+    read_only: true
+    tmpfs:
+      - /data
+      - /config
+      - /tmp
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+networks:
+  # Общая сеть с Caddy от Omad. Имя можно поменять в /opt/olpest/.env (EDGE_NETWORK=...).
+  edge:
+    external: true
+    name: ${EDGE_NETWORK:-edge}

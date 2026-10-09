@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'">
+  <title>olpest — поверхность</title>
+  <meta name="description" content="Белая поверхность, по которой идёт след от курсора. Клик в зоне буквы собирает её в 3D из блоков самой поверхности.">
+  <meta name="theme-color" content="#F3F3F0">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="olpest — поверхность">
+  <meta property="og:description" content="Ник, собранный из блоков поверхности. Кликни — буква поднимется в 3D.">
+  <meta property="og:url" content="https://example.com/">
+  <meta property="og:image" content="https://example.com/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/unbounded-var.woff" as="font" type="font/woff" crossorigin>
+  <link rel="preload" href="assets/fonts/plex-mono-400.woff" as="font" type="font/woff" crossorigin>
+  <link rel="stylesheet" href="assets/style.css?v=4">
+</head>
+<body>
+<div id="stage" tabindex="0" aria-label="Интерактивная поверхность с ником olpest. Клавиши O, L, P, E, S, T поднимают букву, Escape возвращает её в пол, стрелки вращают поднятую букву."></div>
+<svg id="dims" aria-hidden="true"></svg>
+<div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+
+<div class="bar top">
+  <div class="mark"><b>olpest</b><span>поверхность / этюд 03</span></div>
+  <div class="tr-group">
+    <div class="coords" id="coords">зона <i>—</i>   x <i>+000.0</i>   y <i>+000.0</i></div>
+    <button class="chip" id="soundBtn" type="button" aria-pressed="true"><span class="dot"></span>звук</button>
+  </div>
+</div>
+
+<div class="bar bottom">
+  <div class="hint" id="hint">
+    <p>Ведите курсором — по воде пойдёт след, как от самолёта на бреющем полёте.</p>
+    <p>Кликните над буквой, под ней или по ней. Соберётся 3D-буква из её блоков и блоков её зоны. Тяните мышью, чтобы вращать. <kbd>Esc</kbd> — вернуть.</p>
+  </div>
+  <div class="rail" id="rail" aria-label="Буквы ника"></div>
+  <div class="stampwrap">
+    <div class="stamp" aria-live="polite">
+      <div>изделие</div><div><span class="big" id="sItem">—</span></div>
+      <div>блоки</div><div id="sBlocks">—</div>
+      <div class="opt">глубина</div><div class="opt" id="sDepth">—</div>
+      <div class="opt">в полёте</div><div class="opt" id="sFlying">0</div>
+      <div>сборка</div><div id="sTime">—</div>
+      <div class="prog"><i id="sProg"></i></div>
+      <div class="status" id="status">поверхность просыпается</div>
+    </div>
+    <button class="btn" id="collapseBtn" type="button" disabled>Вернуть в пол</button>
+  </div>
+</div>
+
+<div id="reticle"><svg viewBox="-18 -18 36 36"><circle r="13"></circle><path d="M-18 0h7M11 0h7M0 -18v7M0 11v7"></path><circle class="c-dot" r="1.2"></circle></svg><span class="tag" id="retTag"></span></div>
+
+<div id="nogl" hidden>Этому браузеру не хватает WebGL, поэтому поверхность не может отрисоваться. Откройте страницу в свежем Chrome, Safari или Firefox.</div>
+
+<noscript><div id="nojs">Для этой страницы нужен JavaScript и WebGL.</div></noscript>
+<script src="assets/vendor/three-r149.min.js"></script>
+<script src="assets/app.js?v=4"></script>
+</body>
+</html>

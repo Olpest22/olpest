@@ -1,0 +1,121 @@
+/* self-hosted fonts (OFL), subset to Latin + Cyrillic */
+@font-face { font-family: 'Unbounded'; font-style: normal; font-weight: 200 900; font-display: swap; src: url('fonts/unbounded-var.woff') format('woff'); }
+@font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/plex-mono-400.woff') format('woff'); }
+@font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url('fonts/plex-mono-500.woff') format('woff'); }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+[hidden] { display: none !important; }
+#reticle .c-dot { fill: var(--accent); stroke: none; }
+/* Layout: full-bleed WebGL surface treated as a drafting sheet — nick lies flat mid-sheet, instruments sit in the margins like a title block */
+  :root {
+    --paper: #F3F3F0;
+    --ink: #1C1E23;
+    --ink-soft: #6B6F77;
+    --hair: #CFD0CB;
+    --accent: #2338E0;
+    --display: 'Unbounded', 'Arial Black', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+  html, body { height: 100%; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--mono); overflow: hidden; -webkit-font-smoothing: antialiased; }
+  #stage { position: fixed; inset: 0; touch-action: none; outline: none; }
+  @media (pointer: fine) { #stage { cursor: none; } }
+  #stage:focus-visible { box-shadow: inset 0 0 0 2px var(--accent); }
+  #stage canvas { display: block; width: 100%; height: 100%; }
+
+  #dims { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  #dims line { stroke: var(--accent); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  #dims text { font: 500 10px var(--mono); fill: var(--accent); letter-spacing: 0.08em; font-variant-numeric: tabular-nums; }
+  #dims .lbl { fill: var(--ink); }
+
+  .corner { position: fixed; width: 14px; height: 14px; pointer-events: none; border-color: var(--hair); border-style: solid; border-width: 0; }
+  .corner.tl { top: calc(env(safe-area-inset-top, 0px) + 8px); left: 8px; border-top-width: 1px; border-left-width: 1px; }
+  .corner.tr { top: calc(env(safe-area-inset-top, 0px) + 8px); right: 8px; border-top-width: 1px; border-right-width: 1px; }
+  .corner.bl { bottom: calc(env(safe-area-inset-bottom, 0px) + 8px); left: 8px; border-bottom-width: 1px; border-left-width: 1px; }
+  .corner.br { bottom: calc(env(safe-area-inset-bottom, 0px) + 8px); right: 8px; border-bottom-width: 1px; border-right-width: 1px; }
+
+  .bar { position: fixed; left: 24px; right: 24px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; pointer-events: none; font-size: 11px; line-height: 1.55; letter-spacing: 0.04em; }
+  .bar.top { top: calc(env(safe-area-inset-top, 0px) + 20px); align-items: baseline; }
+  .bar.bottom { bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); align-items: flex-end; }
+
+  .mark { display: flex; align-items: baseline; gap: 10px; }
+  .mark b { font-family: var(--display); font-weight: 500; font-size: 15px; letter-spacing: 0.01em; }
+  .mark span { color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.14em; font-size: 10px; }
+
+  .tr-group { display: flex; align-items: baseline; gap: 18px; }
+  .coords { color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: pre; }
+  .coords i { font-style: normal; color: var(--ink); }
+  .chip {
+    pointer-events: auto; cursor: pointer;
+    font: 500 10px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink); background: transparent; border: 1px solid var(--hair); padding: 6px 9px; border-radius: 0;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .chip:hover { border-color: var(--ink); }
+  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .chip[aria-pressed="true"] .dot { background: var(--accent); }
+  .chip .dot { display: inline-block; width: 6px; height: 6px; margin-right: 7px; background: var(--hair); vertical-align: 0; }
+
+  .hint { max-width: 34ch; color: var(--ink-soft); transition: opacity .6s ease; }
+  .hint p { margin: 0; }
+  .hint p + p { margin-top: 4px; }
+  .hint kbd { font-family: var(--mono); font-size: 10px; color: var(--ink); border: 1px solid var(--hair); border-radius: 2px; padding: 0 4px; }
+  .hint.dim { opacity: .45; }
+
+  .rail { display: flex; gap: 2px; pointer-events: auto; align-self: flex-end; }
+  .rail button {
+    font: 500 14px/1 var(--display); color: var(--ink-soft); background: transparent;
+    border: 0; border-bottom: 1px solid var(--hair); width: 34px; padding: 8px 0 7px; cursor: pointer;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .rail button:hover, .rail button.hover { color: var(--ink); border-color: var(--ink); }
+  .rail button.on { color: var(--accent); border-color: var(--accent); }
+  .rail button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .rail button:disabled { opacity: .35; cursor: default; }
+
+  .stampwrap { display: grid; gap: 8px; justify-items: end; }
+  .stamp { pointer-events: none; display: grid; grid-template-columns: auto auto; border: 1px solid var(--ink); background: color-mix(in srgb, var(--paper) 82%, transparent); font-variant-numeric: tabular-nums; min-width: 236px; }
+  .stamp > div { padding: 4px 9px; border-bottom: 1px solid var(--hair); }
+  .stamp > div:nth-child(odd) { color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.12em; font-size: 9.5px; border-right: 1px solid var(--hair); display: flex; align-items: center; }
+  .stamp > div:nth-child(even) { text-align: right; }
+  .stamp .big { font-family: var(--display); font-weight: 500; font-size: 15px; color: var(--accent); }
+  .stamp > div.prog { grid-column: 1 / -1; display: block; height: 3px; padding: 0; border: 0; background: var(--hair); position: relative; }
+  .stamp .prog i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--accent); }
+  .stamp > div.status { grid-column: 1 / -1; display: block; border: 0; text-align: left; color: var(--ink); text-transform: none; letter-spacing: 0.04em; font-size: 11px; padding-block: 6px; }
+  .btn {
+    pointer-events: auto; font: 500 11px/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink); background: transparent; border: 1px solid var(--ink); border-radius: 0; padding: 9px 14px; cursor: pointer;
+    transition: background .2s ease, color .2s ease, opacity .2s ease;
+  }
+  .btn:hover:not(:disabled) { background: var(--ink); color: var(--paper); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn:disabled { opacity: .3; cursor: default; }
+
+  #reticle { position: fixed; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0; transition: opacity .2s ease; }
+  #reticle.show { opacity: 1; }
+  #reticle svg { position: absolute; left: -18px; top: -18px; width: 36px; height: 36px; overflow: visible; transition: transform .18s cubic-bezier(.3,1.6,.5,1); }
+  #reticle.down svg { transform: scale(.72) rotate(45deg); }
+  #reticle circle, #reticle path { fill: none; stroke: var(--ink); stroke-width: 1; }
+  #reticle .tag { position: absolute; left: 16px; top: 12px; font: 500 10px/1 var(--mono); color: var(--accent); letter-spacing: 0.08em; white-space: nowrap; }
+  @media (pointer: coarse) { #reticle { display: none; } }
+
+  #nogl { position: fixed; inset: 0; display: grid; place-items: center; padding-inline: 20px; text-align: center; color: var(--ink-soft); background: var(--paper); }
+
+  @media (max-width: 860px) {
+    .hint { display: none; }
+    .bar.bottom { justify-content: space-between; }
+  }
+  @media (max-width: 560px) {
+    .bar { left: 16px; right: 16px; }
+    .coords { display: none; }
+    .stamp { min-width: 0; font-size: 10px; }
+    .stampwrap { justify-items: stretch; width: 100%; }
+    .rail { width: 100%; justify-content: space-between; }
+    .rail button { flex: 1; }
+    .stamp > div.opt { display: none !important; }
+    .btn { padding: 8px 12px; }
+  }
+#nojs { position: fixed; inset: 0; display: grid; place-items: center; padding-inline: 20px; text-align: center; color: var(--ink-soft); background: var(--paper); font-family: var(--mono); }
